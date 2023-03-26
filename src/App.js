@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { getTodos, createTodo, deleteTodo, editTodo } from "./apis/api";
+import { getTodos, createTodo, editTodo } from "./apis/api";
 import TodoItem from "./components/TodoItem";
 
 class App extends React.Component {
