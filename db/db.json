@@ -1,0 +1,32 @@
+{
+  "todos": [
+    {
+      "content": "1234",
+      "isDeleted": false,
+      "isCompleted": false,
+      "isEditable": false,
+      "id": 1
+    },
+    {
+      "content": "234",
+      "isDeleted": false,
+      "isCompleted": false,
+      "isEditable": false,
+      "id": 2
+    },
+    {
+      "content": "345",
+      "isDeleted": false,
+      "isCompleted": false,
+      "isEditable": false,
+      "id": 3
+    },
+    {
+      "content": "awe",
+      "isDeleted": false,
+      "isCompleted": true,
+      "isEditable": false,
+      "id": 4
+    }
+  ]
+}
