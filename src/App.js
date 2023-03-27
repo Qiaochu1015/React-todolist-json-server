@@ -1,17 +1,17 @@
 import React from "react";
 import "./App.css";
-import { getTodos, createTodo, editTodo } from "./apis/api";
+// import { getTodos, createTodo, editTodo } from "./apis/api";
 import TodoItem from "./components/TodoItem";
+import { withTodos } from "./hoc/withTodos";
 
 class App extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			input: "",
-			todos: [],
-			isEdit: null,
+			// todos: [],
+			// isEdit: null,
 		};
-		this.textInput = React.createRef();
 	}
 
 	handleInput = (e) => {
@@ -22,83 +22,94 @@ class App extends React.Component {
 	};
 
 	onClickAdd = () => {
-		createTodo({
-			content: this.state.input,
-			isDeleted: false,
-			isCompleted: false,
-			isEditable: false,
-		}).then((data) => {
-			// this.state.todos = [data, ...this.state.todos];
-			this.setState({
-				...this.state,
-				todos: [data, ...this.state.todos],
-			});
-			this.textInput.current.value = "";
-			this.textInput.current.focus();
-		});
-	};
-
-	onClickDelete = (id) => {
-		editTodo(id, {
-			isDeleted: true,
-		}).then((data) => {
-			const updatedTodos = this.state.todos.map((item) => {
-				if (item.id === id) {
-					item.isDeleted = true;
-				}
-				return item;
-			});
-			this.setState({
-				...this.state,
-				todos: [...updatedTodos],
-			});
-		});
-	};
-
-	handleEdit = (id) => {
+		// createTodo({
+		// 	content: this.state.input,
+		// 	isDeleted: false,
+		// 	isCompleted: false,
+		// 	isEditable: false,
+		// }).then((data) => {
+		// 	// this.state.todos = [data, ...this.state.todos];
+		// 	this.setState({
+		// 		...this.state,
+		// 		todos: [data, ...this.state.todos],
+		// 	});
+		// });
+		this.props.handleSubmit(this.state.input);
 		this.setState({
-			isEdit: id,
-		})
-	};
-
-	handleSave = (todo) => {
-		editTodo(todo).then((data) => {
-			this.setState({
-				isEdit: null,
-				todos: this.state.todos.map((item) => {
-					if(item.id === data.id) {
-						return data
-					}
-					return item
-				})
-			})
-		})
-	}
-
-	handleComplete = (todo) => {
-		editTodo({
-			...todo,
-			isCompleted: !todo.isCompleted,
-		}).then((data) => {
-			this.setState({
-				todos: this.state.todos.map((item) => {
-					if(item.id === data.id) {
-						return {...data}
-					}
-					return item
-				})
-			});
+			input: "",
 		});
 	};
 
-	componentDidMount = () => {
-		getTodos().then((data) => {
-			this.setState({ ...this.state, todos: data });
-			this.textInput.current.focus();
-		});
-	};
+	// onClickDelete = (id) => {
+	// 	editTodo(id, {
+	// 		isDeleted: true,
+	// 	}).then((data) => {
+	// 		const updatedTodos = this.state.todos.map((item) => {
+	// 			if (item.id === id) {
+	// 				item.isDeleted = true;
+	// 			}
+	// 			return item;
+	// 		});
+	// 		this.setState({
+	// 			...this.state,
+	// 			todos: [...updatedTodos],
+	// 		});
+	// 	});
+	// };
+
+	// handleEdit = (id) => {
+	// 	this.setState({
+	// 		isEdit: id,
+	// 	})
+	// };
+
+	// handleSave = (todo) => {
+	// 	editTodo(todo).then((data) => {
+	// 		this.setState({
+	// 			isEdit: null,
+	// 			todos: this.state.todos.map((item) => {
+	// 				if(item.id === data.id) {
+	// 					return data
+	// 				}
+	// 				return item
+	// 			})
+	// 		})
+	// 	})
+	// }
+
+	// handleComplete = (todo) => {
+	// 	editTodo({
+	// 		...todo,
+	// 		isCompleted: !todo.isCompleted,
+	// 	}).then((data) => {
+	// 		this.setState({
+	// 			todos: this.state.todos.map((item) => {
+	// 				if(item.id === data.id) {
+	// 					return {...data}
+	// 				}
+	// 				return item
+	// 			})
+	// 		});
+	// 	});
+	// };
+
+	// componentDidMount = () => {
+	// 	getTodos().then((data) => {
+	// 		this.setState({ ...this.state, todos: data });
+	// 		this.textInput.current.focus();
+	// 	});
+	// };
 
 	render() {
+		const {
+			todos,
+			isEdit,
+			handleSubmit,
+			handleDelete,
+			handleEdit,
+			handleComplete,
+			handleSave,
+		} = this.props;
 		return (
 			<div className="App">
 				<h1>Todo List</h1>
@@ -106,9 +117,8 @@ class App extends React.Component {
 				<div className="input-container">
 					<input
 						type="text"
-						value={this.state.value}
-						onChange={this.handleInput}
-						ref={this.textInput}
+						value={this.state.input}
+						onChange={(e) => this.handleInput(e)}
 					/>
 					<button
 						className="add-btn"
@@ -122,10 +132,10 @@ class App extends React.Component {
 				<div className="task-container">
 					<div className="pending-container">
 						<h3>Pending Tasks</h3>
-						{this.state.todos.some(
+						{todos.some(
 							(item) => !item.isDeleted && !item.isCompleted
 						) ? (
-							this.state.todos
+							todos
 								.filter(
 									(item) =>
 										!item.isDeleted && !item.isCompleted
@@ -135,11 +145,11 @@ class App extends React.Component {
 										{...item}
 										todo={item}
 										key={item.id}
-										onClickDelete={this.onClickDelete}
-										handleEdit={this.handleEdit}
-										handleSave={this.handleSave}
-										handleComplete={this.handleComplete}
-										isEdit={item.id === this.state.isEdit}
+										handleDelete={handleDelete}
+										handleEdit={handleEdit}
+										handleSave={handleSave}
+										handleComplete={handleComplete}
+										isEdit={item.id === isEdit}
 									/>
 								))
 						) : (
@@ -149,10 +159,10 @@ class App extends React.Component {
 
 					<div className="complete-container">
 						<h3>Completed Tasks</h3>
-						{this.state.todos.some(
+						{todos.some(
 							(item) => !item.isDeleted && item.isCompleted
 						) ? (
-							this.state.todos
+							todos
 								.filter(
 									(item) =>
 										!item.isDeleted && item.isCompleted
@@ -162,11 +172,11 @@ class App extends React.Component {
 										{...item}
 										key={item.id}
 										todo={item}
-										onClickDelete={this.onClickDelete}
-										handleEdit={this.handleEdit}
-										handleSave={this.handleSave}
-										handleComplete={this.handleComplete}
-										isEdit={item.id === this.state.isEdit}
+										handleDelete={handleDelete}
+										handleEdit={handleEdit}
+										handleSave={handleSave}
+										handleComplete={handleComplete}
+										isEdit={item.id === isEdit}
 									/>
 								))
 						) : (
@@ -179,4 +189,4 @@ class App extends React.Component {
 	}
 }
 
-export default App;
+export default withTodos(App);

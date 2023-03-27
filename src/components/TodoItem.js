@@ -21,7 +21,7 @@ export default class TodoItem extends React.Component {
 			handleEdit,
 			handleSave,
 			handleComplete,
-			onClickDelete,
+			handleDelete,
 		} = this.props;
 		return (
 			<div>
@@ -50,7 +50,7 @@ export default class TodoItem extends React.Component {
 				<button onClick={() => handleComplete(todo)}>
 					{isCompleted ? "Uncomplete" : "Complete"}
 				</button>
-				<button onClick={() => onClickDelete(id)}>Delete</button>
+				<button onClick={() => handleDelete(todo)}>Delete</button>
 			</div>
 		);
 	}
